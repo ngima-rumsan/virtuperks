@@ -20,12 +20,14 @@ interface TaskListMainProps {
 }
 
 export default function TaskListMain({ router }: TaskListMainProps) {
-  const [tabStatus, setTabStatus] = useState("active");
+  const [tabStatus, setTabStatus] = useState("open");
 
   const getAllTask = useGetAllTask();
 
   const taskList = getAllTask?.data?.data?.taskCreateds;
- 
+
+  console.log("Status: ", taskList);
+
   return (
     <main className="gap-2 p-2 sm:px-6 sm:py-1 md:gap-8 w-full">
       <div className="space-y-4">
@@ -50,7 +52,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
           </div>
         </div>
 
-        <Tabs defaultValue="active" className="">
+        <Tabs defaultValue="open" className="">
           <div className="flex items-center">
             <div className="w-[400px]">
               <TabsList className="flex bg-blue-50 h-10">
@@ -64,9 +66,9 @@ export default function TaskListMain({ router }: TaskListMainProps) {
                 <TabsTrigger
                   value="closed"
                   className="w-full h-8"
-                  onClick={() => setTabStatus("completed")}
+                  onClick={() => setTabStatus("closed")}
                 >
-                  Completed
+                  Closed
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -77,14 +79,14 @@ export default function TaskListMain({ router }: TaskListMainProps) {
           </div>
 
           <div className="w-full mt-5 mb-5">
-            <TabsContent className="w-full" value="active">
+            <TabsContent className="w-full" value="open">
               <ListCardDetails
                 taskList={taskList}
                 router={router}
                 tabStatus={tabStatus}
               />
             </TabsContent>
-            <TabsContent className="w-full" value="completed">
+            <TabsContent className="w-full" value="closed">
               <ListCardDetails
                 taskList={taskList}
                 router={router}

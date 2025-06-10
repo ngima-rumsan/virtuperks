@@ -4,6 +4,7 @@ import { TaskCreated } from "@workspace/sdk/type";
 import { Card, CardTitle } from "@workspace/ui/components/card";
 import { Coins, Dot, ExternalLink } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
 type ListCardDetailsProps = {
   taskList: TaskCreated[];
   router: AppRouterInstance;
@@ -20,14 +21,14 @@ const ListCardDetails = ({
       return [];
     }
 
-    if (tabStatus === "active") {
+    if (tabStatus === "open") {
       return taskList.filter((task) => {
         return (
           task?.taskDetail?.isOpen === true &&
           !task?.taskDetail?.isTokenDisbursed
         );
       });
-    } else if (tabStatus === "completed") {
+    } else if (tabStatus === "closed") {
       return taskList.filter((task) => {
         return (
           task?.taskDetail?.isOpen === false ||
@@ -57,7 +58,16 @@ const ListCardDetails = ({
           <CardTitle className="flex flex-col p-4 gap-2">
             <div className="flex items-center gap-2 text-[#334155]">
               <span>{task?.taskDetail?.name}</span>
-              <span>{task?.taskDetail?.isOpen ? "Open" : "Closed"}</span>
+              {/* Conditional rendering for status with colors */}
+              {task?.taskDetail?.isOpen ? (
+                <span className="w-20 h-6 flex items-center justify-center bg-green-50 rounded-full text-green-700 p-1 text-sm font-normal">
+                  Open
+                </span>
+              ) : (
+                <span className="w-20 h-6 flex items-center justify-center bg-gray-100 rounded-full text-gray-700 p-1 text-sm font-normal">
+                  Closed
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col gap-1 text-sm">
