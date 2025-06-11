@@ -3,7 +3,6 @@ import { Cuid } from "@/components/departments/details/details.main";
 //   useApproveTaskMutation,
 //   useGetApprovedAndCompletedList,
 // } from "@/hooks/subgraph/querycall";
-import { useGetTaskDetailById } from "@/hooks/subgraph/taskDetail";
 import { PATHS } from "@/routes/paths";
 import { Button } from "@workspace/ui/components/button";
 import { useToast } from "@workspace/ui/hooks/use-toast";
@@ -19,9 +18,11 @@ type TaskMainProps = {
 };
 
 const TaskMain = ({ cuid, router }: TaskMainProps) => {
-  const getTaskDetail = useGetTaskDetailById(cuid.id);
+  // const getTaskDetail = useGetTaskById(cuid.id);
+  // console.log("Task detail: ", getTaskDetail);
 
-  const taskData = getTaskDetail?.data?.data?.taskCreateds[0];
+  // const taskData = getTaskDetail?.data?.data?.taskCreated;
+  // console.log("Task Data: ", taskData);
 
   const { toast } = useToast();
   // const { completedData, approvedData } = useGetApprovedAndCompletedList(
@@ -102,32 +103,6 @@ const TaskMain = ({ cuid, router }: TaskMainProps) => {
             </h3>
           </div>
           <div className="flex items-center ml-auto gap-4">
-            {/* <Button
-              variant="outline"
-              className={getApproveButtonState().className}
-              onClick={getApproveButtonState().onClick}
-              disabled={getApproveButtonState().disabled}
-            >
-              <span
-                className={
-                  approvedData && approvedData.length > 0
-                    ? "text-white"
-                    : "text-[#03AB65]"
-                }
-              >
-                {getApproveButtonState().text}
-              </span>
-              <CheckCircle
-                color={
-                  approvedData && approvedData.length > 0
-                    ? "#ffffff"
-                    : "#03AB65"
-                }
-                strokeWidth={2.5}
-                size={20}
-              />
-            </Button> */}
-
             <Button variant="outline" className="border border-[#E44134]">
               <span className="text-[#E44134]">Close</span>{" "}
               <CircleX color="#E44134" strokeWidth={2.5} size={20} />

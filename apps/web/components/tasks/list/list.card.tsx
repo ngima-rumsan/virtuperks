@@ -51,9 +51,14 @@ const ListCardDetails = ({
         <Card
           key={task?.id}
           className="cursor-pointer"
-          onClick={() =>
-            task?.id && router.push(PATHS.TASKS.DETAILS(task?.internal_id))
-          }
+          onClick={() => {
+            if (task?.id) {
+              console.log("Pushing ID to router:", task.id); // DEBUG LOG
+              router.push(PATHS.TASKS.DETAILS(task.id));
+            } else {
+              console.warn("No task ID found.");
+            }
+          }}
         >
           <CardTitle className="flex flex-col p-4 gap-2">
             <div className="flex items-center gap-2 text-[#334155]">

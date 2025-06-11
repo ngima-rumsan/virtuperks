@@ -1,17 +1,18 @@
 import { useGraphService } from "@/providers/subgraph-provider";
 import { useQuery } from "@tanstack/react-query";
 
-
-
-export const useGetTaskDetailById = (id: string) => {
-    const { queryService } = useGraphService();
-  
-
+export const useGetTaskById = (id: string) => {
+  const { queryService } = useGraphService();
+  console.log("ID in Hook: ", id);
   return useQuery({
-    queryKey: ["taskDetail", id],
+    queryKey: ["taskById", id],
     queryFn: async () => {
-      const taskDetail = await queryService?.getTaskDetails(id)
+      if (!queryService) {
+        throw new Error("Subgraph query service is not initialized.");
+      }
+      const taskDetail = await queryService?.getTaskById(id);
       return taskDetail;
     },
+    enabled: !!id && !!queryService,
   });
-}   
+};

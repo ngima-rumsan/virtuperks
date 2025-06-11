@@ -1,5 +1,5 @@
 import { ListTable } from "@/components/common/list/list.table";
-import { useGetTaskDetailById } from "@/hooks/subgraph/taskDetail";
+import { useGetTaskById } from "@/hooks/subgraph/taskDetail";
 import { TaskHistory } from "@/sampleData";
 import { shortAddress } from "@/utils/shortAddress";
 import {
@@ -25,7 +25,6 @@ import { useHistoryColumns } from "./history.column";
 type TaskPortalParticipantProps = { taskId: any };
 
 const TaskPortalParticipant = ({ taskId }: TaskPortalParticipantProps) => {
-
   const [hoveredWallet, setHoveredWallet] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -35,12 +34,9 @@ const TaskPortalParticipant = ({ taskId }: TaskPortalParticipantProps) => {
     pageIndex: 0,
     pageSize: 10,
   });
-    const getTaskDetail = useGetTaskDetailById(taskId.id);
-     
-  const taskData = getTaskDetail?.data?.data?.taskCreateds[0]
+  const getTaskDetail = useGetTaskById(taskId.id);
 
-
-
+  const taskData = getTaskDetail?.data?.data?.taskCreateds[0];
 
   const columns = useHistoryColumns();
   const table = useReactTable({
