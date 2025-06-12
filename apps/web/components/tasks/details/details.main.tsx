@@ -3,16 +3,18 @@ import { Cuid } from "@/components/departments/details/details.main";
 //   useApproveTaskMutation,
 //   useGetApprovedAndCompletedList,
 // } from "@/hooks/subgraph/querycall";
-import { useGetParticipantPending } from "@/hooks/subgraph/querycall";
+import { DialogButton } from "@/components/common/ui/dialog";
+import { useGetTaskDetailById } from "@/hooks/subgraph/taskDetail";
+import { useDisburseTokenToTask } from "@/hooks/subgraph/token";
 import { PATHS } from "@/routes/paths";
 import { Button } from "@workspace/ui/components/button";
 import { useToast } from "@workspace/ui/hooks/use-toast";
 import { ArrowLeft, CheckCircle, CircleX } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 import TaskParticipant from "./details.participant";
 import TaskDetails from "./details.task";
-
 
 type TaskMainProps = {
   cuid: Cuid;
@@ -20,11 +22,9 @@ type TaskMainProps = {
 };
 
 const TaskMain = ({ cuid, router }: TaskMainProps) => {
-  //const getTaskDetail = useGetTaskDetailById(cuid.id);
-
-
-  //  const taskData = getTaskDetail?.data?.data?.taskCreateds[0];
- 
+  const getTaskDetail = useGetTaskDetailById(cuid.id);
+  console.log("HEllo: ", getTaskDetail.data?.data.taskCreated);
+  const taskData = getTaskDetail.data?.data.taskCreated;
 
   const { toast } = useToast();
   // const { completedData, approvedData } = useGetApprovedAndCompletedList(
@@ -32,6 +32,33 @@ const TaskMain = ({ cuid, router }: TaskMainProps) => {
   // );
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [alertDialog, setAlertDialog] = useState(false);
+  const [localButtonState, setLocalButtonState] = useState<string | null>(null);
+  const { isConnected, address } = useAccount();
+  const [disbursed, setDisbursed] = useState(false);
+
+  const {
+    disburseTokenToTask,
+    disbursePending,
+    disburseSuccess,
+    disburseError,
+  } = useDisburseTokenToTask();
+
+  const handleDisperseToken = () => {
+    if (isConnected) {
+      setIsOpen(true);
+    } else {
+      setAlertDialog(true);
+    }
+  };
+
+  const handleDisperse = () => {
+    if (isConnected) {
+      setIsOpen(true);
+    } else {
+      setAlertDialog(true);
+    }
+  };
 
   // const approveTask = useApproveTaskMutation();
 
@@ -87,6 +114,27 @@ const TaskMain = ({ cuid, router }: TaskMainProps) => {
   //   }
   // };
 
+  const handleDisburseToken = async () => {
+    try {
+      await disburseTokenToTask({
+        taskId: cuid.id,
+        amount: 0,
+        entityId: taskData.internal_id,
+      });
+      setDisbursed(true);
+      toast({
+        title: "Tokens Disbursed Successfully!",
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Disbursement Error:", error);
+      toast({
+        title: "Failed to Disburse Tokens. Please Try Again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <main className="gap-2 p-2 sm:px-6 sm:py-1 md:gap-8 w-full">
       <div className="space-y-4">
@@ -105,28 +153,44 @@ const TaskMain = ({ cuid, router }: TaskMainProps) => {
             </h3>
           </div>
           <div className="flex items-center ml-auto gap-4">
-          <Button
-  variant="outline"
-  style={{
-    border: '1px solid #03AB65'
-  }}
->
-  <span
-    style={{
-      color: '#03AB65'
-    }}
-  >
-    Disburse Tokens
-  </span>{" "}
-  <CheckCircle
-    style={{
-      color: '#03AB65',
-      strokeWidth: 2.5,
-      width: '20px',
-      height: '20px'
-    }}
-  />
-</Button>
+            <Button
+              variant="outline"
+              onClick={handleDisburseToken}
+              disabled={disbursePending || disbursed}
+              style={{
+                border: "1px solid #03AB65",
+                opacity: disbursePending || disbursed ? 0.6 : 1,
+                cursor:
+                  disbursePending || disbursed ? "not-allowed" : "pointer",
+              }}
+            >
+              <span style={{ color: "#03AB65" }}>
+                {disbursePending
+                  ? "Processing..."
+                  : disbursed
+                    ? "Disbursed"
+                    : "Disburse Tokens"}
+              </span>{" "}
+              <CheckCircle
+                style={{
+                  color: "#03AB65",
+                  strokeWidth: 2.5,
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            </Button>
+
+            <DialogButton
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              title="Are you sure you want to disperse token for this participant?"
+              subTitle="This action cannot be undone"
+              buttonName="disperse"
+              handleApplyTaskLogic={handleDisburseToken}
+              submitType="disperse"
+              isDisabled={disbursePending || disbursed}
+            />
 
             <Button variant="outline" className="border border-[#E44134]">
               <span className="text-[#E44134]">Close</span>{" "}
@@ -158,3 +222,6 @@ const TaskMain = ({ cuid, router }: TaskMainProps) => {
 };
 
 export default TaskMain;
+function setDisbursed(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}

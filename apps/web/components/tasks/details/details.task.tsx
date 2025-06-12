@@ -2,7 +2,7 @@ import { Cuid } from "@/components/departments/details/details.main";
 import { useGetTaskDetailById } from "@/hooks/subgraph/taskDetail";
 import { formatDate } from "@/utils/formatDate";
 import { Card, CardTitle } from "@workspace/ui/components/card";
-import { ExternalLink, Timer, Trophy, UserRoundCog, Users } from "lucide-react";
+import { Timer, Trophy, UserRoundCog, Users } from "lucide-react";
 
 type TaskDetailsProps = {
   cuid: Cuid;
@@ -10,11 +10,14 @@ type TaskDetailsProps = {
 
 const TaskDetails = ({ cuid }: TaskDetailsProps) => {
   const getTaskDetail = useGetTaskDetailById(cuid.id);
-  console.log("Task Details: ", getTaskDetail.data);
-  const taskData = getTaskDetail?.data?.taskCreateds[0];
+  console.log(
+    "Task Details: ",
+    getTaskDetail?.data?.data?.taskCreated?.taskDetail,
+  );
+  const taskData = getTaskDetail?.data?.data?.taskCreated?.taskDetail;
   console.log("data--", taskData);
 
-  const formattedDate = formatDate(taskData?.taskDetail?.expiryDate);
+  const formattedDate = formatDate(taskData?.expiryDate);
 
   const handleUrlClick = (e: React.MouseEvent<HTMLDivElement>, url: string) => {
     e.preventDefault();
@@ -33,7 +36,7 @@ const TaskDetails = ({ cuid }: TaskDetailsProps) => {
               Status
             </span>
           </div>
-          <div
+          {/* <div
             className="flex items-center gap-2 cursor-pointer hover:text-blue-400"
             onClick={(e) => handleUrlClick(e, taskData?.taskDetail?.detailsUrl)}
           >
@@ -41,23 +44,23 @@ const TaskDetails = ({ cuid }: TaskDetailsProps) => {
               View Github repository
             </span>
             <ExternalLink size={16} color="#297AD6" strokeWidth={2.75} />
-          </div>
+          </div> */}
         </CardTitle>
 
         <div className="mt-3 mb-3 w-full overflow-hidden">
           <p className="text-[#334155] text-sm line-clamp-1">
-            {taskData?.taskDetail?.detailsUrl}
+            {taskData?.detailsUrl}
           </p>
         </div>
 
         <div className="flex flex-col text-gray-500 font-normal gap-1 text-sm">
           <span className="flex items-center gap-2">
             <UserRoundCog color="#64748B" size={20} strokeWidth={2.5} />
-            Task Owner: {taskData?.taskDetail?.owner}
+            Task Owner: {taskData?.owner}
           </span>
           <span className="flex items-center gap-2">
             <Users color="#64748B" size={20} strokeWidth={2.5} />
-            {taskData?.taskDetail.maxParticipants} members participating
+            {taskData?.maxParticipants} members participating
           </span>
           <span className="flex items-center gap-2">
             <Timer color="#64748B" size={20} strokeWidth={2.5} /> Deadline:{" "}
@@ -71,7 +74,7 @@ const TaskDetails = ({ cuid }: TaskDetailsProps) => {
           <Trophy color="#297AD6" size={20} />
         </div>
         <span className="text-2xl text-[#297AD6] font-bold">
-          {taskData?.taskDetail?.rewardAmount} Tokens
+          {taskData?.totalRewardAmount} Tokens
         </span>
       </Card>
     </>
