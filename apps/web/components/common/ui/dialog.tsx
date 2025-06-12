@@ -19,10 +19,14 @@ type DialogButtonProps = {
   title: string;
   subTitle: string;
   buttonName: string;
-  submitType?: "Apply" | "complete";
+  submitType?: "Apply" | "complete" | "disperse";
   inputLabel?: string;
   inputPlaceholder?: string;
-  handleApplyTaskLogic?: (data?: { completionUrl?: string }) => Promise<void>;
+  handleApplyTaskLogic?: (data?: {
+    completionUrl?: string;
+    amount?: number;
+  }) => Promise<void>;
+
   isDisabled?: boolean;
 };
 
@@ -39,13 +43,12 @@ export const DialogButton = ({
   isDisabled,
 }: DialogButtonProps) => {
   const [completionUrl, setCompletionUrl] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-
   const handleSubmit = async () => {
     setError(null);
-    console.log(completionUrl, "completionUrl");
 
     if (submitType === "complete") {
       if (!completionUrl.trim()) {
@@ -67,6 +70,29 @@ export const DialogButton = ({
         toast({
           title: "Error",
           description: "Failed to mark task as complete",
+          variant: "destructive",
+        });
+      }
+    } else if (submitType === "disperse") {
+      if (!amount || amount <= 0) {
+        setError("Please enter a valid amount");
+        toast({
+          title: "Invalid Input",
+          description: "Amount must be greater than zero",
+          variant: "destructive",
+        });
+        return;
+      }
+      try {
+        await handleApplyTaskLogic?.({ amount });
+        setAmount(0);
+        setIsOpen(false);
+      } catch (error) {
+        console.error("Error:", error);
+        setError("Failed to submit amount");
+        toast({
+          title: "Error",
+          description: "Failed to disperse amount",
           variant: "destructive",
         });
       }
@@ -92,6 +118,7 @@ export const DialogButton = ({
         setIsOpen(open);
         if (!open) {
           setCompletionUrl("");
+          setAmount(0);
           setError(null);
         }
       }}
@@ -105,6 +132,7 @@ export const DialogButton = ({
             {subTitle}
           </DialogDescription>
         </DialogHeader>
+
         {submitType === "complete" && (
           <div className="py-4">
             <Label
@@ -119,11 +147,36 @@ export const DialogButton = ({
               value={completionUrl}
               onChange={(e) => setCompletionUrl(e.target.value)}
               placeholder={inputPlaceholder}
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 ${error ? "border-red-500" : ""}`}
+              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 ${
+                error ? "border-red-500" : ""
+              }`}
             />
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
         )}
+
+        {submitType === "disperse" && (
+          <div className="py-4">
+            <Label
+              htmlFor="amount"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Amount
+            </Label>
+            <Input
+              id="amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              placeholder="Enter token amount"
+              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 ${
+                error ? "border-red-500" : ""
+              }`}
+            />
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+          </div>
+        )}
+
         <DialogFooter>
           <Button
             type="button"
@@ -138,7 +191,9 @@ export const DialogButton = ({
             type="submit"
             onClick={handleSubmit}
             disabled={
-              isDisabled || (submitType === "complete" && !completionUrl.trim())
+              isDisabled ||
+              (submitType === "complete" && !completionUrl.trim()) ||
+              (submitType === "disperse" && amount <= 0)
             }
             className="bg-green-500 text-white hover:bg-green-600 disabled:bg-gray-400 disabled:text-gray-200"
           >

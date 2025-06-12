@@ -50,9 +50,7 @@ const ListCardDetails = ({
         <Card
           key={task?.id}
           className="cursor-pointer"
-          onClick={() =>
-            task?.id && router.push(PATHS.TASKS.DETAILS(task?.internal_id))
-          }
+          onClick={() => task?.id && router.push(PATHS.TASKS.DETAILS(task?.id))}
         >
           <CardTitle className="flex flex-col p-4 gap-2">
             <div className="flex items-center gap-2 text-[#334155]">
