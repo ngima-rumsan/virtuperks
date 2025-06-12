@@ -1,14 +1,23 @@
 // import { useGetTaskParticipantsWithStatus } from "@/hooks/subgraph/querycall";
 import {
   ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   SortingState,
+  useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
 import { Card, CardTitle } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
-import { Search } from "lucide-react";
-import React from "react";
+import { Search, User } from "lucide-react";
+import React, { useMemo } from "react";
 import { useColumns } from "./details.column";
+import { useGetParticipantAccepted, useGetParticipantPending} from "@/hooks/subgraph/querycall";
+import { ListTable } from "@/components/common/list/list.table";
+import { DataTablePagination } from "@/components/common/list/list.pagination";
+import { shortAddress } from "@/utils/shortAddress";
 
 type Cuid = {
   id: string;
@@ -19,6 +28,7 @@ type TaskParticipantProps = {
 };
 
 const TaskParticipant = ({ taskId }: TaskParticipantProps) => {
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -30,49 +40,30 @@ const TaskParticipant = ({ taskId }: TaskParticipantProps) => {
     pageIndex: 0,
     pageSize: 10,
   });
-  const columns = useColumns();
+  const columns = useColumns(); 
+  const { pendingParticipants } = useGetParticipantPending(taskId.id)
+  const { acceptedParticipants} = useGetParticipantAccepted(taskId.id)
+  
 
-  // const { taskParticipantsWithStatus } = useGetTaskParticipantsWithStatus(
-  //   taskId.id,
-  // );
 
-  // const { tableData, acceptedParticipants } = useMemo(() => {
-  //   if (!taskParticipantsWithStatus)
-  //     return { tableData: [], acceptedParticipants: [] };
-
-  //   return {
-  //     // For table: show only UNACCEPTED and COMPLETED participants
-  //     tableData: taskParticipantsWithStatus.filter(
-  //       (participant: ParticipantTaskStatus) =>
-  //         participant.status === "UNACCEPTED" ||
-  //         participant.status === "COMPLETED",
-  //     ),
-  //     // For sidebar: show only ACCEPTED participants
-  //     acceptedParticipants: taskParticipantsWithStatus.filter(
-  //       (participant: ParticipantTaskStatus) =>
-  //         participant.status === "ACCEPTED",
-  //     ),
-  //   };
-  // }, [taskParticipantsWithStatus]);
-
-  // const table = useReactTable({
-  //   data: tableData,
-  //   columns,
-  //   onSortingChange: setSorting,
-  //   onColumnFiltersChange: setColumnFilters,
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getPaginationRowModel: getPaginationRowModel(),
-  //   getSortedRowModel: getSortedRowModel(),
-  //   getFilteredRowModel: getFilteredRowModel(),
-  //   onColumnVisibilityChange: setColumnVisibility,
-  //   onRowSelectionChange: setRowSelection,
-  //   state: {
-  //     sorting,
-  //     columnFilters,
-  //     columnVisibility,
-  //     rowSelection,
-  //   },
-  // });
+  const table = useReactTable({
+    data: pendingParticipants || [],
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
 
   return (
     <>
@@ -96,13 +87,13 @@ const TaskParticipant = ({ taskId }: TaskParticipantProps) => {
         </div>
 
         <div className="">
-          {/* <ListTable table={table} columns={columns} />
+          <ListTable table={table} columns={columns} />
           <hr />
           <DataTablePagination
             table={table}
             setPagination={setPagination}
             pagination={pagination}
-          /> */}
+          />
         </div>
       </Card>
 
@@ -114,7 +105,7 @@ const TaskParticipant = ({ taskId }: TaskParticipantProps) => {
           </span>
         </CardTitle>
 
-        {/* <div className="flex items-center w-full mt-5 mb-5 gap-2 flex-wrap">
+        <div className="flex items-center w-full mt-5 mb-5 gap-2 flex-wrap">
           {acceptedParticipants.map((participant: any) => (
             <div
               key={participant.participant}
@@ -129,7 +120,7 @@ const TaskParticipant = ({ taskId }: TaskParticipantProps) => {
               </span>
             </div>
           ))}
-        </div> */}
+        </div>
       </Card>
     </>
   );

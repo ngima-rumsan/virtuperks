@@ -184,7 +184,7 @@ type TaskAccepted @entity(immutable: true) {
   internal_id: Bytes! # bytes32
   participant: Bytes! # address
   blockNumber: BigInt!
-  blockTimestamp: BigInt!
+blockTimestamp: BigInt!
   transactionHash: Bytes!
   taskDetail: TaskDetail
 }
@@ -215,11 +215,12 @@ type TaskCompleted @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  taskDetail: TaskDetail
 }
 
 type TaskDetail @entity {
   id: Bytes!
- 
+
   name: String!
   detailsUrl: String!
   owner: Bytes!
@@ -248,6 +249,18 @@ type TaskCreated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type ParticipantTaskStatus @entity(immutable: false) {
+  id: Bytes! 
+  participant: Bytes! 
+  taskId: Bytes! 
+  status: String! 
+  lastUpdatedBlock: BigInt! 
+  lastUpdatedTimestamp: BigInt!
+  taskDetail: TaskDetail
+  rewardManagement: RewardManagementCreated
+}
+
+
 type TaskIdMapping @entity {
   id: Bytes! # internal_id (event.params.id)
   taskCreated: TaskCreated!
@@ -267,6 +280,7 @@ type TaskVerified @entity(immutable: true) {
   internal_id: Bytes! # bytes32
   participant: Bytes! # address
   verifier: Bytes! # address
+  status: String # string
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

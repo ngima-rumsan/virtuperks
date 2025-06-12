@@ -1,4 +1,6 @@
 // import { useAcceptParticipantMutation } from "@/hooks/subgraph/querycall";
+import { DialogButton } from "@/components/common/ui/dialog";
+import { useAcceptParticipantMutation } from "@/hooks/subgraph/querycall";
 import { getDialogContent } from "@/utils/dialog";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@workspace/ui/hooks/use-toast";
@@ -9,17 +11,19 @@ export function useColumns<T>(): ColumnDef<T>[] {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [isRefetching, setIsRefetching] = useState(false);
-  // const acceptParticipantMutation = useAcceptParticipantMutation();
+ const acceptParticipantMutation = useAcceptParticipantMutation();
   const { toast } = useToast();
 
   const handleAction = (row: any) => {
-    const entityId = row.original.entityTaskManager.id;
+
+    const entityId = row.original.rewardManagement.rewardManagement;
 
     const taskId = row.original.taskId;
+   
     const status = row.getValue("status");
     const participant = row.getValue("participant");
 
-    if (status === "UNACCEPTED") {
+    if (status === "PENDING") {
       setSelectedTask({ id: taskId, participant, status, entityId });
       setIsDialogOpen(true);
     } else if (status === "COMPLETED") {
@@ -28,38 +32,38 @@ export function useColumns<T>(): ColumnDef<T>[] {
     }
   };
 
-  // const handleDialogAction = async () => {
-  //   if (selectedTask && selectedTask.status === "UNACCEPTED") {
-  //     try {
-  //       setIsRefetching(true);
-  //       await acceptParticipantMutation.mutateAsync({
-  //         taskId: selectedTask.id,
-  //         participant: selectedTask.participant,
-  //         entityId: selectedTask.entityId,
-  //       });
+  const handleDialogAction = async () => {
+    if (selectedTask && selectedTask.status === "PENDING") {
+      try {
+        setIsRefetching(true);
+        await acceptParticipantMutation.mutateAsync({
+          taskId: selectedTask.id,
+          participant: selectedTask.participant,
+          entityId: selectedTask.entityId,
+        });
 
-  //       // Success Toast
-  //       toast({
-  //         title: "Participant accepted successfully!",
-  //         variant: "success",
-  //       });
-  //       setIsDialogOpen(false);
-  //       setSelectedTask(null);
-  //     } catch (error) {
-  //       console.error("Error accepting participant:", error);
-  //       // Error Toast
-  //       toast({
-  //         title: "Failed to accept participant.",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   }
-  // };
+        // Success Toast
+        toast({
+          title: "Participant accepted successfully!",
+          variant: "success",
+        });
+        setIsDialogOpen(false);
+        setSelectedTask(null);
+      } catch (error) {
+        console.error("Error accepting participant:", error);
+        // Error Toast
+        toast({
+          title: "Failed to accept participant.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
-  // const LoadingBar = () =>
-  //   acceptParticipantMutation.isPending ? (
-  //     <div className="fixed top-0 left-0 w-full h-1 bg-blue-500 animate-pulse" />
-  //   ) : null;
+  const LoadingBar = () =>
+    acceptParticipantMutation.isPending ? (
+      <div className="fixed top-0 left-0 w-full h-1 bg-blue-500 animate-pulse" />
+    ) : null;
 
   return [
     {
@@ -130,7 +134,7 @@ export function useColumns<T>(): ColumnDef<T>[] {
               <CircleX color="#E44134" strokeWidth={1.5} size={28} />
             </span>
 
-            {/* <DialogButton
+            <DialogButton
               isOpen={isDialogOpen}
               setIsOpen={setIsDialogOpen}
               title={dialogContent.title}
@@ -143,7 +147,7 @@ export function useColumns<T>(): ColumnDef<T>[] {
               handleApplyTaskLogic={handleDialogAction}
               isDisabled={acceptParticipantMutation.isPending}
             />
-            <LoadingBar /> */}
+            <LoadingBar />
           </>
         );
       },

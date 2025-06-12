@@ -18,11 +18,9 @@ type TaskMainProps = {
 };
 
 const TaskMain = ({ cuid, router }: TaskMainProps) => {
-  // const getTaskDetail = useGetTaskById(cuid.id);
-  // console.log("Task detail: ", getTaskDetail);
+  //const getTaskDetail = useGetTaskDetailById(cuid.id);
 
-  // const taskData = getTaskDetail?.data?.data?.taskCreated;
-  // console.log("Task Data: ", taskData);
+  //  const taskData = getTaskDetail?.data?.data?.taskCreateds[0];
 
   const { toast } = useToast();
   // const { completedData, approvedData } = useGetApprovedAndCompletedList(

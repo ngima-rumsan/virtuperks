@@ -15,6 +15,7 @@ import {
   TaskCompleted,
   TaskCreated,
   TaskDetailsUpdated,
+  TaskIdMapping,
   TaskVerified,
   TokenTransferred
 } from "../generated/schema"
@@ -36,7 +37,7 @@ import {
   TaskVerified as TaskVerifiedEvent,
   TokenTransferred as TokenTransferredEvent,
 } from "../generated/templates/RewardManagement/RewardManagement"
-import { fetchTaskDetails } from "./utils"
+import { fetchTaskDetails, updateParticipantTaskStatus } from "./utils"
 
 export function handleAdditionalDisbursementToTask(
   event: AdditionalDisbursementToTaskEvent,
@@ -123,7 +124,21 @@ export function handleParticipantApplied(event: ParticipantAppliedEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+  // Create TaskDetail entity first
+  let taskDetail = fetchTaskDetails(event.params.id, event.address);
+  entity.taskDetail = taskDetail.id;
+  
+
   entity.save()
+
+    updateParticipantTaskStatus(
+    event.params.participant, 
+    event.params.id, 
+    'PENDING', 
+    event.block.number, 
+    event.block.timestamp, 
+    taskDetail ? taskDetail.id : null
+  );
 }
 
 export function handleParticipantRemovedFromWhitelist(
@@ -170,8 +185,20 @@ export function handleTaskAccepted(event: TaskAcceptedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+   // Create TaskDetail entity first
+  let taskDetail = fetchTaskDetails(event.params.id, event.address);
+  entity.taskDetail = taskDetail.id;
 
   entity.save()
+
+    updateParticipantTaskStatus(
+    event.params.participant, 
+    event.params.id, 
+    'ACCEPTED', 
+    event.block.number, 
+    event.block.timestamp, 
+    taskDetail ? taskDetail.id : null
+  );
 }
 
 export function handleTaskApproved(event: TaskApprovedEvent): void {
@@ -213,7 +240,24 @@ export function handleTaskCompleted(event: TaskCompletedEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+   // Create TaskDetail entity first
+  let taskDetail = fetchTaskDetails(event.params.id, event.address);
+  entity.taskDetail = taskDetail.id;
+  // taskDetail.createdAt = event.block.timestamp;
+  // taskDetail.task = entity.id; 
+  // taskDetail.save();
+
+
   entity.save()
+   updateParticipantTaskStatus(
+    event.params.participant, 
+    event.params.id, 
+    'COMPLETED', 
+    event.block.number, 
+    event.block.timestamp, 
+    taskDetail ? taskDetail.id : null
+  );
+  
 }
 
 export function handleTaskCreated(event: TaskCreatedEvent): void {
@@ -246,9 +290,9 @@ if (rewardManagement) {
   taskDetail.save();
 
   
-// let mapping = new TaskIdMapping(event.params.id)
-//   mapping.taskCreated = entity.id;
-//   mapping.save();
+let mapping = new TaskIdMapping(event.params.id)
+  mapping.taskCreated = entity.id;
+  mapping.save();
 
   
   entity.internal_id = event.params.id;

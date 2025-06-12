@@ -248,6 +248,136 @@ export const getTaskCreatedById = `
     }
   }
 `;
+// to get the partcipant status by task id
+export const GetPendingParticipantsByTask = `
+  query GetTaskParticipantsWithStatus($taskId: Bytes!) {
+    participantTaskStatuses(where: { taskId: $taskId , status:"PENDING"}) {
+      id
+      participant
+      taskId
+      status
+      lastUpdatedBlock
+      lastUpdatedTimestamp
+     taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+        rewardManagement{
+        appId
+        id
+        name
+        rewardManagement
+        }
+    }
+  }
+`;
+
+
+export const GetAcceptedParticipantsByTask = `
+  query GetTaskParticipantsWithStatus($taskId: Bytes!) {
+    participantTaskStatuses(where: { taskId: $taskId , status:"ACCEPTED"}) {
+      id
+      participant
+      taskId
+      status
+      lastUpdatedBlock
+      lastUpdatedTimestamp
+     taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+        rewardManagement{
+        appId
+        id
+        name
+        rewardManagement
+        }
+    }
+  }
+`;
+
+
+
+export const getApprovedAndCompletedByTask = `
+query GetApprovedAndCompleted($taskId: Bytes!) {
+  taskCompleteds(where: { internal_id: $taskId }) {
+    id
+    internal_id
+    participant
+    blockNumber
+    blockTimestamp
+    taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+  }
+  taskVerifieds(where: { internal_id: $taskId }) {
+    id
+    internal_id
+    participant
+    verifier
+    blockNumber
+    blockTimestamp
+    taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+  }
+}
+
+`;
 
 // RewardManagement Queries
 export const RewardManagementQueries = {

@@ -2,8 +2,13 @@ import { Client, fetchExchange } from '@urql/core';
 import {
   AppRegistryQueries,
   FactoryQueries,
+
+  GetAcceptedParticipantsByTask,
+
+  GetPendingParticipantsByTask,
   getTaskCreatedById,
   getTaskCreation,
+
   ParticipantQueries,
   RewardManagementQueries,
   TokenQueries
@@ -59,7 +64,54 @@ export class SubgraphService {
 
 
 
+  }
+  
+  
+async getPendingParticipantsByTask(taskId: string) { 
+    try { 
+
+const {data, error} = await this.subgraphQuery.query(
+      GetPendingParticipantsByTask,
+      { taskId }
+    );
+      return { data, error };
+    } catch (error) {
+      console.error('Error fetching task with participant status:', error);
+      return { error };
+
+
+    } 
+  
+
+
+
+
+
+
 }
+  
+  async getAcceptedParticipantsByTask(taskId: string) { 
+    try { 
+
+const {data, error} = await this.subgraphQuery.query(
+      GetAcceptedParticipantsByTask,
+      { taskId }
+    );
+      return { data, error };
+    } catch (error) {
+      console.error('Error fetching task with participant status:', error);
+      return { error };
+
+
+    } 
+  
+
+
+
+
+
+
+  }
   // async getTaskManagementData(taskId?: string) {
   //   try {
   //     //const taskCreation = await this.subgraphQuery.query(RewardManagementQueries.getTaskCreation, {});

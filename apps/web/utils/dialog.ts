@@ -14,7 +14,7 @@ export const getDialogContent = (status: string) => {
 
 
   export const getDialogContents = (buttonState:string) => {
-    if (buttonState === "COMPLETE") {
+    if (buttonState === "COMPLETEd") {
       return {
         title: "Are you sure you want to mark this task as completed?",
         subTitle: "This action cannot be undone",

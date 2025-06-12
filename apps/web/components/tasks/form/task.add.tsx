@@ -52,13 +52,13 @@ export default function TaskAdd({ router }: TaskAddProps) {
   const { taskAdd, taskPending, taskSuccess } = useTaskAdd();
 
   const createTask = async (data: any) => {
-    console.log("Creating task with data:", data);
+
     if (!isAddress(data.entityAddress)) {
       console.error("Invalid Ethereum address:", data.entityAddress);
       return;
     }
     const taskId = keccak256(data.name);
-    console.log("Generated task ID:", taskId);
+    
 
     const { detailsUrl, rewardToken, owner, isOpen, name } = data;
     const expiryDate = BigInt(
@@ -71,24 +71,7 @@ export default function TaskAdd({ router }: TaskAddProps) {
     const maxParticipants = BigInt(data.maxParticipants);
 
     try {
-      // await writeContractAsync({
-      //   address: data.entityAddress,
-      //   abi: EntityTaskManagementABI,
-      //   functionName: "createTask",
-      //   args: [
-      //     {
-      //       taskName,
-      //       detailsUrl,
-      //       rewardToken,
-      //       rewardAmount,
-      //       allowedWallets,
-      //       maxParticipants,
-      //       expiryDate,
-      //       owner,
-      //       isActive,
-      //     },
-      //   ],
-      // });
+      
       await taskAdd({
         taskId,
         name,

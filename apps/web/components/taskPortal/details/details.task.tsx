@@ -17,24 +17,20 @@ const TaskPortalDetails = ({ taskData }: TaskPortalDetailsProps) => {
       <Card className="w-[80%] h-full p-4">
         <CardTitle className="flex flex-col gap-1 w-full">
           <div className="flex items-center gap-2">
-            <span>{taskData?.taskDetail?.taskName}</span>
-            <span className="w-20 h-6 flex items-center justify-center bg-green-50 rounded-full text-green-700 p-1 text-sm font-normal">
-              {taskData?.taskDetail?.isActive === true ? `active` : `closed`}
+            <span>{taskData?.taskDetail?.name}</span>
+            <span className="w-20 h-6 flex items-center justify-center bg-blue-50 rounded-full text-green-700 p-1 text-sm font-normal">
+              {taskData?.taskDetail?.isOpen === true ? `open` : `closed`}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 cursor-pointer hover:text-blue-400">
-            <p className="line-clamp-1 font-normal text-[#297AD6] text-sm">
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:text-blue-400"
+            onClick={(e) => handleUrlClick(e, taskData?.taskDetail?.detailsUrl)}
+          >
+            <span className="line-clamp-1 font-normal text-[#297AD6] text-sm">
               {taskData?.taskDetail?.detailsUrl}
-            </p>
-            <ExternalLink
-              size={16}
-              color="#297AD6"
-              strokeWidth={2.75}
-              onClick={(e) =>
-                handleUrlClick(e, taskData?.taskDetail?.detailsUrl)
-              }
-            />
+            </span>
+            <ExternalLink size={16} color="#297AD6" strokeWidth={2.75} />
           </div>
         </CardTitle>
 
@@ -59,7 +55,7 @@ const TaskPortalDetails = ({ taskData }: TaskPortalDetailsProps) => {
           <Trophy color="#297AD6" size={20} />
         </div>
         <span className="text-2xl text-[#297AD6] font-bold">
-          {taskData?.taskDetail?.rewardAmount} tokens
+          {taskData?.taskDetail?.totalRewardAmount} tokens
         </span>
       </Card>
     </>
