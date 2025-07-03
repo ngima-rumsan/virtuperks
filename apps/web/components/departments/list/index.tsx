@@ -1,9 +1,16 @@
 "use client";
 
+import { DataTablePagination } from "@/components/common/list/list.pagination";
 import LoaderSkeleton from "@/components/common/list/loder.skeleton";
 import { useGetAllEntity } from "@/hooks/subgraph/entity";
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { DepartmentDetails } from "@workspace/sdk/type";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import React from "react";
 import DepartmentListCard from "./list.card";
 import ListToolBar from "./list.toolbar";
 
@@ -13,8 +20,32 @@ interface DepartmentListProps {
 
 export default function DepartmentList({ router }: DepartmentListProps) {
   const getAllEntity = useGetAllEntity();
+
   const entityList: DepartmentDetails[] =
     getAllEntity?.data?.data?.rewardManagementCreateds || [];
+
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const table = useReactTable({
+    data: entityList,
+    columns: [], // no column definitions used in card list view
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination,
+    },
+  });
+
+  // slice data manually if card view is not using react-table rows
+  const paginatedEntities = React.useMemo(() => {
+    const start = pagination.pageIndex * pagination.pageSize;
+    const end = start + pagination.pageSize;
+    return entityList.slice(start, end);
+  }, [entityList, pagination]);
+
   if (getAllEntity.isLoading) {
     return (
       <LoaderSkeleton
@@ -22,16 +53,17 @@ export default function DepartmentList({ router }: DepartmentListProps) {
         subtitle
         titleWidth="w-40"
         subtitleWidth="w-64"
-        showTabs={false} // Adjust based on layout, no tabs here
-        showDatePicker={false} // Adjust based on layout, no date picker here
-        showCreateButton={true} // Show add button skeleton
-        cardCount={20} // Show 5 skeleton cards to match layout
-        gridCols="grid-cols-4" // Match your grid layout (4 columns)
-        cardHeight="h-48" // Adjust card height for your cards
-        showPagination={false} // Pagination if relevant
+        showTabs={false}
+        showDatePicker={false}
+        showCreateButton={true}
+        cardCount={20}
+        gridCols="grid-cols-4"
+        cardHeight="h-48"
+        showPagination={false}
       />
     );
   }
+
   return (
     <main className="gap-2 p-2 sm:px-6 sm:py-1 md:gap-8 w-full">
       <div className="space-y-4">
@@ -41,8 +73,20 @@ export default function DepartmentList({ router }: DepartmentListProps) {
             Overview of all the departments
           </h3>
         </div>
+
         <ListToolBar />
-        <DepartmentListCard router={router} entityList={entityList} />
+
+        {/* paginated list */}
+        <DepartmentListCard router={router} entityList={paginatedEntities} />
+
+        {/* pagination */}
+        <div className="mt-5 mb-5">
+          <DataTablePagination
+            table={table}
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        </div>
       </div>
     </main>
   );
