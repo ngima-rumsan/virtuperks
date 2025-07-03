@@ -7,4 +7,5 @@ export enum NavItem {
   TASK_PORTAL = "/task_portal",
   MY_TASKS = "/task_portal/mine",
   TOKEN = "/TOKEN",
+  TOKEN_MARKETPLACE = "/token_marketplace",
 }

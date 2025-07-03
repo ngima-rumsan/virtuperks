@@ -11,6 +11,7 @@ import {
   Layers,
   LayoutDashboard,
   LayoutList,
+  ShoppingBag,
   Wallet,
 } from "lucide-react";
 import Image from "next/image";
@@ -25,7 +26,8 @@ export default function UnifiedNav({ children }: PropsWithChildren) {
   console.log("Active Page: ", pathname);
 
   const getNavItemClasses = (navItem: NavItem) => {
-    const paths = navItemPaths[navItem];
+    // const paths = navItemPaths[navItem];
+    const paths = navItemPaths[navItem] ?? [];
 
     return paths.some((path) => {
       if (path === "/task_portal") {
@@ -42,6 +44,7 @@ export default function UnifiedNav({ children }: PropsWithChildren) {
     })
       ? "text-[#297AD6] border-b-2 border-[#297AD6]"
       : "text-[#1E293B] hover:text-[#1e293b]";
+    console.log(`Checking ${navItem}:`, paths, "Against pathname:", pathname);
   };
 
   return (
@@ -85,12 +88,20 @@ export default function UnifiedNav({ children }: PropsWithChildren) {
             Task Management
           </Link>
 
-          <Link
+          {/* <Link
             href="/treasurer/token"
             className={`flex items-center gap-2 text-sm font-normal transition-colors h-full p-2 ${getNavItemClasses(NavItem.TREASURER_TOKEN)}`}
           >
             <Layers size={18} strokeWidth={2.65} />
             Token Management
+          </Link> */}
+
+          <Link
+            href="/token_marketplace"
+            className={`flex items-center gap-2 text-sm font-normal transition-colors h-full p-2 ${getNavItemClasses(NavItem.TOKEN_MARKETPLACE)}`}
+          >
+            <ShoppingBag size={18} strokeWidth={2.65} />
+            Token Marketplace
           </Link>
         </nav>
 

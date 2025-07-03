@@ -45,6 +45,8 @@ export default function DepartmentDetailsCard({
   //useGetEntityOwners get all the entity Owners
   const { getEntityOwners } = useGetEntityOwners(entity?.entityId);
 
+  console.log("Entity Owner: ", getEntityOwners);
+
   const {
     directTransfer,
     directTransferPending,
@@ -98,7 +100,6 @@ export default function DepartmentDetailsCard({
     role: process.env.NEXT_PUBLIC_MINTER_ROLE || "",
   });
   const hasTreasurerRole = typeof roleCheck === "boolean" ? roleCheck : false;
-  console.log("hasTreasurerRole", hasTreasurerRole);
 
   const getTransferButton = () => {
     if (directTransferPending) {
@@ -163,7 +164,7 @@ export default function DepartmentDetailsCard({
       </div>
 
       <div className="grid grid-cols-4 mt-4 gap-4 w-full">
-        <Card className="font-normal text-base h-40 flex flex-col p-4">
+        <Card className="font-normal text-base h-50 flex flex-col p-4">
           <CardTitle className="flex items-center gap-3">
             <div className="rounded-full flex p-3 bg-[#475263] mb-auto">
               <User color="#fff" />
@@ -173,15 +174,42 @@ export default function DepartmentDetailsCard({
                 <div className="flex flex-start text-[#334155] text-xl justify-start">
                   {entity.name}
                 </div>
-                <div className="flex items-center gap-1">
-                  <Copy size={16} strokeWidth={3} color="#94A3B8" />
-                </div>
+                {getEntityOwners && getEntityOwners.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[#475569] font-medium text-sm">
+                      {getEntityOwners.length === 1
+                        ? "Department Owner"
+                        : "Department Owners"}
+                    </span>
+                    <div className="flex flex-col gap-1 text-sm text-[#64748B]">
+                      {getEntityOwners.map((owner: string, idx: number) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <span className="truncate max-w-[200px]">
+                            {owner}
+                          </span>
+                          <Copy
+                            size={16}
+                            strokeWidth={2}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              navigator.clipboard.writeText(owner);
+                              toast({
+                                title: "Copied to clipboard!",
+                                variant: "success",
+                              });
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </CardDescription>
           </CardTitle>
         </Card>
 
-        <Card className="font-normal text-base h-40 flex flex-col">
+        <Card className="font-normal text-base h-50 flex flex-col">
           <CardHeader className="flex-grow">
             <CardTitle className="flex p-0 mb-4 text-[#0F172A]">
               Total Tokens Allocated
@@ -191,7 +219,7 @@ export default function DepartmentDetailsCard({
             {totalAllocatedTokens ?? "-"}
           </CardFooter>
         </Card>
-        <Card className="font-normal text-base h-40 flex flex-col">
+        <Card className="font-normal text-base h-50 flex flex-col">
           <CardHeader className="flex-grow">
             <CardTitle className="flex p-0 mb-4 text-[#0F172A]">
               Total Tokens Available
@@ -201,7 +229,7 @@ export default function DepartmentDetailsCard({
             {unallocatedTokens ?? "-"}
           </CardFooter>
         </Card>
-        <Card className="font-normal text-base h-40 flex flex-col">
+        <Card className="font-normal text-base h-50 flex flex-col">
           <CardHeader className="flex-grow">
             <CardTitle className="flex p-0 mb-4 text-[#0F172A]">
               Total Tokens Redeemed

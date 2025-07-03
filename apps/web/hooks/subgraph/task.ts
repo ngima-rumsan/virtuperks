@@ -1,50 +1,48 @@
 import { useGraphService } from "@/providers/subgraph-provider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
-import { useReadRewardManagementGetTask, useReadRewardManagementIsTaskExpired, useWriteRewardManagementCloseTask, useWriteRewardManagementCreateTask } from "../wagmi/contracts";
-
-
+import {
+  useReadRewardManagementGetTask,
+  useReadRewardManagementIsTaskExpired,
+  useWriteRewardManagementCloseTask,
+  useWriteRewardManagementCreateTask,
+} from "../wagmi/contracts";
 
 export const useTaskAdd = () => {
   const queryClient = useQueryClient();
-  const { writeContractAsync } =
-      useWriteRewardManagementCreateTask();
-    const { address, isConnected } = useAccount();
+  const { writeContractAsync } = useWriteRewardManagementCreateTask();
+  const { address, isConnected } = useAccount();
 
-      
- 
-
- 
-    
   const mutation = useMutation({
-      mutationFn: async (data: any) => {
-        
+    mutationFn: async (data: any) => {
       const verifiedParticipants = data.verifiedParticipants || [];
-       
-   
+
       const result = await writeContractAsync({
         address: data.entityAddress as `0x${string}`,
-          args: [data.taskId, { 
-            name: data.name as string, 
-            detailsUrl: data.detailsUrl as string, 
-            owner: data.owner as `0x${string}`, 
-            expiryDate: BigInt(data.expiryDate), 
-            rewardToken: data.rewardToken as `0x${string}`, 
-            totalRewardAmount: BigInt(data.totalRewardAmount), 
-            isOpen: Boolean(data.isOpen), 
-            requireApproval: Boolean(data.requireApproval), 
-            isWhitelisted: Boolean(data.isWhitelisted), 
-            isTokenDisbursed: Boolean(data.isTokenDisbursed), 
-            maxParticipants: BigInt(data.maxParticipants), 
-            acceptedParticipantCount: BigInt(data.acceptedParticipantCount), 
-            verifiedParticipants:verifiedParticipants as readonly `0x${string}`[] 
-          }, data.whitelistedParticipants],
+        args: [
+          data.taskId,
+          {
+            name: data.name as string,
+            detailsUrl: data.detailsUrl as string,
+            owner: data.owner as `0x${string}`,
+            expiryDate: BigInt(data.expiryDate),
+            rewardToken: data.rewardToken as `0x${string}`,
+            totalRewardAmount: BigInt(data.totalRewardAmount),
+            isOpen: Boolean(data.isOpen),
+            requireApproval: Boolean(data.requireApproval),
+            isWhitelisted: Boolean(data.isWhitelisted),
+            isTokenDisbursed: Boolean(data.isTokenDisbursed),
+            maxParticipants: BigInt(data.maxParticipants),
+            acceptedParticipantCount: BigInt(data.acceptedParticipantCount),
+            verifiedParticipants:
+              verifiedParticipants as readonly `0x${string}`[],
+          },
+          data.whitelistedParticipants,
+        ],
       });
-     return result;
+      return result;
     },
-    onSuccess: (result, variable) => {
-    
-    },
+    onSuccess: (result, variable) => {},
   });
   return {
     taskAdd: mutation.mutateAsync,
@@ -53,17 +51,40 @@ export const useTaskAdd = () => {
   };
 };
 
-
-
-
 export const useGetAllTask = () => {
   const { queryService } = useGraphService();
 
   return useQuery({
     queryKey: ["taskList"],
     queryFn: async () => {
-      const taskDetail = await queryService?.getAllTasks()
-      return taskDetail
+      const taskDetail = await queryService?.getAllTasks();
+      return taskDetail;
+    },
+    enabled: !!queryService,
+  });
+};
+
+export const useOpenTask = () => {
+  const { queryService } = useGraphService();
+
+  return useQuery({
+    queryKey: ["openTasks"],
+    queryFn: async () => {
+      const taskDetail = await queryService?.getOpenTasks();
+      return taskDetail;
+    },
+    enabled: !!queryService,
+  });
+};
+
+export const useClosedTask = () => {
+  const { queryService } = useGraphService();
+
+  return useQuery({
+    queryKey: ["closedTasks"],
+    queryFn: async () => {
+      const taskDetail = await queryService?.getCloseTasks();
+      return taskDetail;
     },
     enabled: !!queryService,
   });
@@ -71,7 +92,7 @@ export const useGetAllTask = () => {
 
 export const useGetTaskById = (id: string) => {
   const { queryService } = useGraphService();
-  
+
   return useQuery({
     queryKey: ["taskById", id],
     queryFn: async () => {
@@ -83,26 +104,20 @@ export const useGetTaskById = (id: string) => {
     },
     enabled: !!id && !!queryService,
   });
-
-
-
-}
-
-
+};
 
 export const useCloseTaskMutation = () => {
   const queryClient = useQueryClient();
   const { writeContractAsync, isPending, isSuccess } =
-    useWriteRewardManagementCloseTask()
+    useWriteRewardManagementCloseTask();
 
   return useMutation({
     mutationFn: async ({
       taskId,
-      entityId
-     
+      entityId,
     }: {
       taskId: string;
-     
+
       entityId: string;
     }) => {
       const result = await writeContractAsync({
@@ -124,8 +139,7 @@ export const useCloseTaskMutation = () => {
 
 // to check wheter the task is expired or not
 
-export const useCheckTaskStatus = (taskId:string, entityId:string) => {
-  
+export const useCheckTaskStatus = (taskId: string, entityId: string) => {
   const {
     data: taskStatus,
     isError,
@@ -134,18 +148,16 @@ export const useCheckTaskStatus = (taskId:string, entityId:string) => {
     address: entityId as `0x${string}`,
     args: [taskId as `0x${string}`],
   });
-  console.log(taskStatus, 'taskStatus from hook')
+  console.log(taskStatus, "taskStatus from hook");
 
   return {
-    status:taskStatus?.isTokenDisbursed,
+    status: taskStatus?.isTokenDisbursed,
     isError,
     statusLoading: isLoading,
   };
 };
 
-
-export const useIsTaskExpired = (taskId:string, entityId:string) => {
-  
+export const useIsTaskExpired = (taskId: string, entityId: string) => {
   const {
     data: status,
     isError,
@@ -161,5 +173,3 @@ export const useIsTaskExpired = (taskId:string, entityId:string) => {
     statusLoading: isLoading,
   };
 };
-
-

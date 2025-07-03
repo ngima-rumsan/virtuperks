@@ -10,45 +10,55 @@ type TaskDetailsProps = {
 
 const TaskDetails = ({ cuid }: TaskDetailsProps) => {
   const getTaskDetail = useGetTaskDetailById(cuid.id);
- 
-  const taskData = getTaskDetail?.data?.data?.taskCreated
 
+  const taskData = getTaskDetail?.data?.data?.taskCreated;
 
   const formattedDate = formatDate(taskData?.taskDetail?.expiryDate);
 
-  const handleUrlClick = (e: React.MouseEvent<HTMLDivElement>, url: string) => {
-    e.preventDefault();
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
+  const handleUrlClick = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
     <>
       <Card className="w-[80%] h-full p-4">
-        <CardTitle className="flex flex-col gap-1 w-full">
+        <CardTitle className="flex flex-col gap-3 w-full">
           <div className="flex items-center gap-2">
-            <span>Default Title</span>
-            <span className="w-20 h-6 flex items-center justify-center bg-green-50 rounded-full text-green-700 p-1 text-sm font-normal">
-              Status
+            <span className="text-lg font-semibold text-[#334155]">
+              {taskData?.taskDetail?.name}
+            </span>
+            <span
+              className={`px-2 py-0.5 rounded text-white text-xs font-semibold ${
+                taskData?.taskDetail?.isOpen ? "bg-green-500" : "bg-red-500"
+              }`}
+            >
+              {taskData?.taskDetail?.isOpen ? "Open" : "Closed"}
             </span>
           </div>
-          <div
-            className="flex items-center gap-2 cursor-pointer hover:text-blue-400"
-            onClick={(e) => handleUrlClick(e, taskData?.taskDetail?.detailsUrl)}
-          >
-            <span className="text-[#297AD6] text-sm font-normal">
-              View Github repository
+
+          <div className="flex items-center gap-1 max-w-[220px] truncate text-sm">
+            <span
+              className="text-[#297AD6] truncate"
+              title={taskData?.taskDetail?.detailsUrl}
+            >
+              {taskData?.taskDetail?.detailsUrl
+                ? taskData.taskDetail.detailsUrl.length > 40
+                  ? `${taskData.taskDetail.detailsUrl.slice(0, 40)}...`
+                  : taskData.taskDetail.detailsUrl
+                : ""}
             </span>
-            <ExternalLink size={16} color="#297AD6" strokeWidth={2.75} />
+            <ExternalLink
+              size={16}
+              color="#297AD6"
+              strokeWidth={1.75}
+              className="flex-shrink-0 cursor-pointer"
+              onClick={(e) =>
+                handleUrlClick(e, taskData?.taskDetail?.detailsUrl ?? "")
+              }
+            />
           </div>
         </CardTitle>
-
-        <div className="mt-3 mb-3 w-full overflow-hidden">
-          <p className="text-[#334155] text-sm line-clamp-1">
-            {taskData?.taskDetail?.detailsUrl}
-          </p>
-        </div>
 
         <div className="flex flex-col text-gray-500 font-normal gap-1 text-sm">
           <span className="flex items-center gap-2">

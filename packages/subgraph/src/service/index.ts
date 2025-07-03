@@ -1,9 +1,9 @@
 import { Client, fetchExchange } from '@urql/core';
 import {
   AppRegistryQueries,
+  getCloseTasks,
   GetCombineParticipantsByTask,
-
-
+  getOpenTasks,
   getParticipantTasks,
   GetRewardManagement,
   GetRewardManagementCreatedByAddress,
@@ -58,6 +58,24 @@ export class SubgraphService {
     const { data, error } = await this.subgraphQuery.query(getTaskCreation, {});
     return { data, error };
   }
+
+ 
+  async getOpenTasks() {
+    
+      const { data, error } = await this.subgraphQuery.query(getOpenTasks, {})
+      return { data, error };
+    
+  }
+
+ 
+  async getCloseTasks() {
+    
+      const { data, error } = await this.subgraphQuery.query(getCloseTasks, {})
+      return { data, error };
+  }
+
+
+
 
   async getTaskById(id: string) {
     const { data, error } = await this.subgraphQuery.query(getTaskCreatedById, { id })

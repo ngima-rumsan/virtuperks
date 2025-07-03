@@ -2,7 +2,7 @@
 
 import { DataTablePagination } from "@/components/common/list/list.pagination";
 import LoaderSkeleton from "@/components/common/list/loder.skeleton";
-import { useGetAllTask } from "@/hooks/subgraph/task";
+import { useClosedTask, useOpenTask } from "@/hooks/subgraph/task";
 import { PATHS } from "@/routes/paths";
 import {
   ColumnFiltersState,
@@ -25,7 +25,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { Plus } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useColumns } from "../details/details.column";
 import ListCardDetails from "./list.card";
 import { DatePickerWithRange } from "./list.date";
@@ -35,27 +35,32 @@ interface TaskListMainProps {
 }
 
 export default function TaskListMain({ router }: TaskListMainProps) {
-  const [tabStatus, setTabStatus] = useState("active");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  const getAllTask = useGetAllTask();
-
-  const columns = useColumns();
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
+  const [tabStatus, setTabStatus] = useState<"open" | "closed">("open");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const taskList = getAllTask?.data?.data?.taskCreateds;
+  const openTask = useOpenTask();
+  const closeTask = useClosedTask();
+
+  const openTaskList = openTask?.data?.data?.taskCreateds ?? [];
+  const closedTaskList = closeTask?.data?.data?.taskCreateds ?? [];
+
+  const isLoading =
+    (tabStatus === "open" && openTask.isLoading) ||
+    (tabStatus === "closed" && closeTask.isLoading);
+
+  const currentTaskList = tabStatus === "open" ? openTaskList : closedTaskList;
+
+  const columns = useColumns();
 
   const table = useReactTable({
-    data: taskList || [],
+    data: currentTaskList,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -80,7 +85,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
     },
   });
 
-  if (getAllTask.isLoading) {
+  if (isLoading) {
     return (
       <LoaderSkeleton
         title
@@ -113,7 +118,6 @@ export default function TaskListMain({ router }: TaskListMainProps) {
             <Button
               className="min-w-[10rem] fw-[600] h-10"
               variant="default"
-              type="submit"
               onClick={() => router.push(PATHS.TASKS.ADD)}
             >
               <Plus size={22} strokeWidth={2.75} />
@@ -122,7 +126,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
           </div>
         </div>
 
-        <Tabs defaultValue="active" className="">
+        <Tabs value={tabStatus} defaultValue="open">
           <div className="flex items-center">
             <div className="w-[400px]">
               <TabsList className="flex bg-blue-50 h-10">
@@ -136,9 +140,9 @@ export default function TaskListMain({ router }: TaskListMainProps) {
                 <TabsTrigger
                   value="closed"
                   className="w-full h-8"
-                  onClick={() => setTabStatus("completed")}
+                  onClick={() => setTabStatus("closed")}
                 >
-                  Completed
+                  Closed
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -149,21 +153,22 @@ export default function TaskListMain({ router }: TaskListMainProps) {
           </div>
 
           <div className="w-full mt-5 mb-5">
-            <TabsContent className="w-full" value="active">
+            <TabsContent className="w-full" value="open">
               <ListCardDetails
-                taskList={taskList}
+                taskList={openTaskList}
                 router={router}
-                tabStatus={tabStatus}
+                tabStatus="open"
               />
             </TabsContent>
-            <TabsContent className="w-full" value="completed">
+            <TabsContent className="w-full" value="closed">
               <ListCardDetails
-                taskList={taskList}
+                taskList={closedTaskList}
                 router={router}
-                tabStatus={tabStatus}
+                tabStatus="closed"
               />
             </TabsContent>
           </div>
+
           <div className="mt-5 mb-5">
             <DataTablePagination
               table={table}

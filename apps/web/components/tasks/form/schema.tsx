@@ -40,19 +40,3 @@ export const taskSchema = () => {
 // Type for the form data that will be validated by the schema
 export type TaskFormData = z.infer<ReturnType<typeof taskSchema>>;
 
-// Helper function to convert from form data to TaskCreateParams
-// export function formDataToTaskCreateParams(data: TaskFormData): TaskCreateParams {
-//   return {
-//     taskId: data.taskId,
-//     name: data.name,
-//     detailsUrl: data.detailsUrl,
-//     owner: data.owner,
-//     expiryDate: data.expiryDate, // Already converted to timestamp in the schema
-//     rewardToken: data.rewardToken,
-//     totalRewardAmount: data.totalRewardAmount,
-//     requireApproval: data.requireApproval,
-//     isWhitelisted: data.isWhitelisted,
-//     maxParticipants: data.maxParticipants,
-//     whitelistedParticipants: data.whitelistedParticipants || []
-//   };
-// }

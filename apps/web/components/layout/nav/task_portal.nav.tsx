@@ -18,10 +18,21 @@ export default function TaskPortalNav({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
   const getNavItemClasses = (navItem: NavItem) => {
-    const paths = navItemPaths[navItem] ?? [];
-    return paths.some(
-      (path) => pathname === path || pathname.startsWith(`${path}/`),
-    )
+    const paths = navItemPaths[navItem];
+
+    return paths.some((path) => {
+      if (path === "/task_portal") {
+        return (
+          pathname === "/task_portal" ||
+          (pathname.startsWith("/task_portal/") &&
+            pathname !== "/task_portal/mine")
+        );
+      }
+      if (path === "/task_portal/mine") {
+        return pathname === "/task_portal/mine";
+      }
+      return pathname === path || pathname.startsWith(`${path}/`);
+    })
       ? "text-[#297AD6] border-b-2 border-[#297AD6]"
       : "text-[#1E293B] hover:text-[#1e293b]";
   };

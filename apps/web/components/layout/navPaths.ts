@@ -13,4 +13,5 @@ export const navItemPaths: Record<NavItem, string[]> = {
   [NavItem.TASKS]: [PATHS.TASKS.HOME],
   [NavItem.TOKEN]: [],
   [NavItem.TREASURER_DEPARTMENT]: [],
+  [NavItem.TOKEN_MARKETPLACE]: ["/token_marketplace"],
 };

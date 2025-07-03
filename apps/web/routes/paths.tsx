@@ -6,6 +6,7 @@ const ROOTS = {
   TREASURER: "/treasurer",
   TASKS: "/tasks",
   TASKPORTAL: "/task_portal",
+  TOKENMARKETPLACE: "/token_marketplace",
 };
 
 export const PATHS = {
@@ -47,5 +48,9 @@ export const PATHS = {
     HOME: `${ROOTS.TASKPORTAL}`,
     ADD: `${ROOTS.TASKPORTAL}/add`,
     DETAILS: (cuid: string) => `${ROOTS.TASKPORTAL}/${cuid}`,
+  },
+
+  TOKENMARKETPLACE: {
+    HOME: `${ROOTS.TOKENMARKETPLACE}`,
   },
 };

@@ -213,6 +213,87 @@ export const getTaskCreation = `
   `;
 
 
+
+  export const getOpenTasks = `
+    query GetTaskCreation {
+      taskCreateds(first: 100, orderBy: blockTimestamp, orderDirection: desc, where: { taskDetail_: { isOpen: true } }
+      ) {
+        id
+        internal_id
+        taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+        rewardManagement{
+        appId
+        id
+        name
+        rewardManagement
+        }
+        createdBy
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+  
+    }
+  `;
+
+
+
+  export const getCloseTasks = `
+    query GetTaskCreation {
+      taskCreateds(first: 100, orderBy: blockTimestamp, orderDirection: desc, where: { taskDetail_: { isOpen: false } }
+      ) {
+        id
+        internal_id
+        taskDetail {
+        acceptedParticipantCount
+        detailsUrl
+        id
+        expiryDate
+        isOpen
+        isTokenDisbursed
+        maxParticipants
+        name
+        owner
+        rewardToken
+        totalRewardAmount
+        requireApproval
+        isWhitelisted
+        verifiedParticipants
+        
+        }
+        rewardManagement{
+        appId
+        id
+        name
+        rewardManagement
+        }
+        createdBy
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+  
+    }
+  `;
+
+
+
 export const getTaskCreatedById = `
   query GetTaskCreatedById($id: ID!) {
     taskCreated(id: $id) {

@@ -6,7 +6,7 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar";
 import { ConnectKitButton } from "connectkit";
-import { Coins, Layers, LayoutList, Wallet } from "lucide-react";
+import { Coins, LayoutList, ShoppingBag, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,9 +19,20 @@ export default function EntityOwnerNav({ children }: PropsWithChildren) {
 
   const getNavItemClasses = (navItem: NavItem) => {
     const paths = navItemPaths[navItem];
-    return paths.some(
-      (path) => pathname === path || pathname.startsWith(`${path}/`),
-    )
+
+    return paths.some((path) => {
+      if (path === "/task_portal") {
+        return (
+          pathname === "/task_portal" ||
+          (pathname.startsWith("/task_portal/") &&
+            pathname !== "/task_portal/mine")
+        );
+      }
+      if (path === "/task_portal/mine") {
+        return pathname === "/task_portal/mine";
+      }
+      return pathname === path || pathname.startsWith(`${path}/`);
+    })
       ? "text-[#297AD6] border-b-2 border-[#297AD6]"
       : "text-[#1E293B] hover:text-[#1e293b]";
   };
@@ -54,12 +65,19 @@ export default function EntityOwnerNav({ children }: PropsWithChildren) {
             <Coins size={18} strokeWidth={2.65} />
             Department
           </Link>
-          <Link
+          {/* <Link
             href="/tasks"
             className={`flex items-center gap-2 text-sm font-normal transition-colors h-full p-2 ${getNavItemClasses(NavItem.TASKS)}`}
           >
             <Layers size={18} strokeWidth={2.65} />
             Task Management
+          </Link> */}
+          <Link
+            href="/token_marketplace"
+            className={`flex items-center gap-2 text-sm font-normal transition-colors h-full p-2 ${getNavItemClasses(NavItem.TOKEN_MARKETPLACE)}`}
+          >
+            <ShoppingBag size={18} strokeWidth={2.65} />
+            Token Marketplace
           </Link>
         </nav>
 
