@@ -2,7 +2,10 @@
 
 import { DataTablePagination } from "@/components/common/list/list.pagination";
 import LoaderSkeleton from "@/components/common/list/loder.skeleton";
-import { useGetTaskListByParticipant } from "@/hooks/subgraph/participant";
+import {
+  useGetTaskListByParticipant,
+  useGetTaskListOwned,
+} from "@/hooks/subgraph/participant";
 import { useWallet } from "@/providers/walletProvider";
 import {
   ColumnFiltersState,
@@ -37,25 +40,6 @@ interface TaskListMainProps {
   router: AppRouterInstance;
 }
 
-const dummyOwnedTasks = [
-  {
-    id: "dummy-1",
-    taskDetail: {
-      name: "Dummy Owned Task",
-      expiryDate: Date.now(),
-      isOpen: true,
-      detailsUrl: "#",
-      id: "1",
-      acceptedParticipantCount: 0,
-      isTokenDisbursed: false,
-      maxParticipants: 10,
-    },
-    rewardManagement: {
-      rewardManagement: "0x1234567890",
-    },
-  },
-];
-
 export default function TaskListMain({ router }: TaskListMainProps) {
   const [tabStatus, setTabStatus] = useState("participating");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -68,12 +52,24 @@ export default function TaskListMain({ router }: TaskListMainProps) {
   });
 
   const { address } = useWallet();
-  const { data: myTaskList, isLoading } = useGetTaskListByParticipant(
-    address as `0x${string}`,
-  );
+  const { data: participatingTask, isLoading: participatingTaskListLoading } =
+    useGetTaskListByParticipant(address as `0x${string}`);
 
-  const taskList = myTaskList?.data?.participantTaskStatuses || [];
+  const participatingTaskList =
+    participatingTask?.data?.participantTaskStatuses || [];
+
+  // console.log("Participating Task: ", participatingTaskList);
+  const { data: TaskList, isLoading: ownedTaskListLoading } =
+    useGetTaskListOwned(address as `0x${string}`);
+
+  const ownedTaskList = TaskList?.data?.participantTaskStatuses || [];
+
+  // console.log("Owned Task: ", ownedTaskList);
+
   const columns = useColumns();
+
+  const taskList =
+    tabStatus === "participating" ? participatingTaskList : ownedTaskList;
 
   const table = useReactTable({
     data: taskList,
@@ -94,7 +90,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
     },
   });
 
-  if (isLoading) {
+  if (participatingTaskListLoading || ownedTaskListLoading) {
     return (
       <LoaderSkeleton
         title
@@ -163,7 +159,6 @@ export default function TaskListMain({ router }: TaskListMainProps) {
           </Card>
         </div>
 
-        {/* ✅ Tabs start */}
         <Tabs
           value={tabStatus}
           onValueChange={setTabStatus}
@@ -195,7 +190,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
             </TabsContent>
             <TabsContent className="w-full" value="owned">
               <ListCardDetails
-                taskList={dummyOwnedTasks}
+                taskList={ownedTaskList}
                 router={router}
                 tabStatus="owned"
               />

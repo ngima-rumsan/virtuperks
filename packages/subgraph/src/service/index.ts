@@ -4,6 +4,7 @@ import {
   getCloseTasks,
   GetCombineParticipantsByTask,
   getOpenTasks,
+  getParticipantOwnedTasks,
   getParticipantTasks,
   GetRewardManagement,
   GetRewardManagementCreatedByAddress,
@@ -156,6 +157,21 @@ export class SubgraphService {
       const { data, error } = await this.subgraphQuery.query(
         getParticipantTasks,
         { participant: participantAddress }
+      )
+      return { data, error }
+    } catch (error) {
+
+      console.error('Error fetching rewardManagementCreated by address:', error);
+      return { data: null, error };
+    }
+  }
+
+
+  async getOwnedTasks(participantAddress: string) {
+    try {
+      const { data, error } = await this.subgraphQuery.query(
+        getParticipantOwnedTasks,
+        { creator: participantAddress }
       )
       return { data, error }
     } catch (error) {
