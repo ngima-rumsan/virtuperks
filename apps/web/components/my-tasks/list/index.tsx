@@ -28,7 +28,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { CheckCircle, User, Users } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useColumns } from "../details/details.column";
 import ListCardDetails from "./list.card";
 import { DatePickerWithRange } from "./list.date";
@@ -37,16 +37,32 @@ interface TaskListMainProps {
   router: AppRouterInstance;
 }
 
+const dummyOwnedTasks = [
+  {
+    id: "dummy-1",
+    taskDetail: {
+      name: "Dummy Owned Task",
+      expiryDate: Date.now(),
+      isOpen: true,
+      detailsUrl: "#",
+      id: "1",
+      acceptedParticipantCount: 0,
+      isTokenDisbursed: false,
+      maxParticipants: 10,
+    },
+    rewardManagement: {
+      rewardManagement: "0x1234567890",
+    },
+  },
+];
+
 export default function TaskListMain({ router }: TaskListMainProps) {
-  const [tabStatus, setTabStatus] = useState("active");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
+  const [tabStatus, setTabStatus] = useState("participating");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
@@ -55,13 +71,12 @@ export default function TaskListMain({ router }: TaskListMainProps) {
   const { data: myTaskList, isLoading } = useGetTaskListByParticipant(
     address as `0x${string}`,
   );
-  const taskList = myTaskList?.data?.participantTaskStatuses;
-  console.log("Task List: ", myTaskList);
 
+  const taskList = myTaskList?.data?.participantTaskStatuses || [];
   const columns = useColumns();
 
   const table = useReactTable({
-    data: taskList || [],
+    data: taskList,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -82,16 +97,16 @@ export default function TaskListMain({ router }: TaskListMainProps) {
   if (isLoading) {
     return (
       <LoaderSkeleton
-        title // h1: "My List"
+        title
+        subtitle
         titleWidth="w-56"
-        subtitle // h3: "List of all the tasks..."
         subtitleWidth="w-72"
-        cardCount={3} // 3 summary cards in grid
+        cardCount={3}
         gridCols="grid-cols-3"
         cardHeight="h-24"
         showTabs
-        tabsCount={2} // Participating, Owned
-        rowCount={5} // Simulated rows for ListCardDetails
+        tabsCount={2}
+        rowCount={5}
         rowHeight="h-20"
         showPagination
       />
@@ -118,7 +133,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
                 Owned
               </CardTitle>
               <CardFooter className="text-blue-500 text-2xl font-bold">
-                {"10"}
+                10
               </CardFooter>
             </CardHeader>
           </Card>
@@ -130,7 +145,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
                 Participating
               </CardTitle>
               <CardFooter className="text-blue-500 text-2xl font-bold">
-                {"5"}
+                5
               </CardFooter>
             </CardHeader>
           </Card>
@@ -142,54 +157,51 @@ export default function TaskListMain({ router }: TaskListMainProps) {
                 Total Task Completed
               </CardTitle>
               <CardFooter className="text-blue-500 text-2xl font-bold">
-                {"5"}
+                5
               </CardFooter>
             </CardHeader>
           </Card>
         </div>
 
-        <Tabs defaultValue="active" className="">
+        {/* ✅ Tabs start */}
+        <Tabs
+          value={tabStatus}
+          onValueChange={setTabStatus}
+          defaultValue="participating"
+        >
           <div className="flex items-center mt-10 mb-10">
             <div className="w-[400px]">
               <TabsList className="flex bg-blue-50 h-10">
-                <TabsTrigger
-                  value="open"
-                  className="w-full h-8"
-                  onClick={() => setTabStatus("open")}
-                >
+                <TabsTrigger value="participating" className="w-full h-8">
                   Participating
                 </TabsTrigger>
-                <TabsTrigger
-                  value="closed"
-                  className="w-full h-8"
-                  onClick={() => setTabStatus("completed")}
-                >
+                <TabsTrigger value="owned" className="w-full h-8">
                   Owned
                 </TabsTrigger>
               </TabsList>
             </div>
-
             <div className="ml-auto">
               <DatePickerWithRange />
             </div>
           </div>
 
           <div className="w-full mt-5 mb-5">
-            <TabsContent className="w-full" value="active">
+            <TabsContent className="w-full" value="participating">
               <ListCardDetails
                 taskList={taskList}
                 router={router}
-                tabStatus={tabStatus}
+                tabStatus="participating"
               />
             </TabsContent>
-            <TabsContent className="w-full" value="completed">
+            <TabsContent className="w-full" value="owned">
               <ListCardDetails
-                taskList={taskList}
+                taskList={dummyOwnedTasks}
                 router={router}
-                tabStatus={tabStatus}
+                tabStatus="owned"
               />
             </TabsContent>
           </div>
+
           <div className="mt-5 mb-5">
             <DataTablePagination
               table={table}
@@ -198,6 +210,7 @@ export default function TaskListMain({ router }: TaskListMainProps) {
             />
           </div>
         </Tabs>
+        {/* ✅ Tabs end */}
       </div>
     </main>
   );
