@@ -1,17 +1,13 @@
 import { CommonFields } from "./common.type";
-import { EntityTaskManagerCreated } from './entity.type';
+import { RewardManagementCreated } from './entity.type';
 import { TaskDetail } from "./taskDetail.type";
-
-
-
 
 export type TaskData = CommonFields & {
   id: string;
-  internal_id: string;
+  internal_id: string;       
   createdBy: string;
-  entityTaskManager: EntityTaskManagerCreated;
+  rewardManagement: RewardManagementCreated;  
 };
-
 
 export interface ParticipantTaskStatus extends CommonFields {
   id: string;

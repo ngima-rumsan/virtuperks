@@ -1,5 +1,5 @@
-export type EntityTaskManagerCreated = {
-  _appId: string;
-  _name: string;
-  entityTaskManager: string;
+export type RewardManagementCreated = {
+  rewardManagement: string; 
+  appId: string;
+  name: string;            
 };

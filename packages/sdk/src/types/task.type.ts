@@ -13,38 +13,30 @@ export interface AcceptedTaskData extends CommonFields {
 
 
 export type TaskCreated = CommonFields & {
-
-  entityTaskManager?: EntityTaskManagerCreated;
+  rewardManagement?: EntityTaskManagerCreated;
   status: string;
   taskDetail: TaskDetail;
 };
 
 export interface TaskCreateParams {
   
-  taskId: string;        
+  internal_id: string;        
   
-
   name: string;           
   detailsUrl: string;    
   owner: string;         
   expiryDate: number;     
   
- 
   rewardToken: string;   
   totalRewardAmount: string;
   isOpen: boolean;
   isTokenDisbursed: boolean;
   
- 
   requireApproval: boolean; 
   isWhitelisted: boolean;  
   
-
   maxParticipants: number;  
   acceptedParticipantCount: number;
   
-  
   whitelistedParticipants?: string[];  
 }
-
-

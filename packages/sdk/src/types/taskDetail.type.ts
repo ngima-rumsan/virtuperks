@@ -5,10 +5,10 @@ export type TaskDetail = {
   expiryDate: number;
   id: string;
   isOpen: boolean;
-  maxParticipants: string;
+  maxParticipants: number;
   owner: string;
   totalRewardAmount: string;
   rewardToken: string;
   isTokenDisbursed: boolean;
-  status: string;
+  requireApproval: boolean;
 };
