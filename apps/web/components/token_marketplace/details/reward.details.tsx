@@ -1,5 +1,6 @@
 "use client";
 
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useEffect, useState } from "react";
 
 type RedemptionStatus = "completed" | "pending";
@@ -22,7 +23,7 @@ interface Reward {
 
 interface RewardDetailsProps {
   rewardId: string;
-  router: any;
+  router: AppRouterInstance;
 }
 
 const RewardDetails = ({ rewardId, router }: RewardDetailsProps) => {

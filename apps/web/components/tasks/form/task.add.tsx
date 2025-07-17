@@ -1,6 +1,5 @@
 "use client";
 
-import { useCheckTotalUnallocatedTokens } from "@/hooks/subgraph/entity";
 import { useTaskAdd } from "@/hooks/subgraph/task";
 import { PATHS } from "@/routes/paths";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +9,9 @@ import { useToast } from "@workspace/ui/hooks/use-toast";
 import { toUtf8Bytes } from "ethers";
 import { ArrowLeft } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { isAddress, keccak256 } from "viem";
+import { keccak256 } from "viem";
 import { useWriteContract } from "wagmi";
 import { TaskFormData, taskSchema } from "./schema";
 import TaskBaseForm from "./task.form";
@@ -51,8 +50,6 @@ export default function TaskAdd({ router }: TaskAddProps) {
   const { writeContractAsync, isPending, isSuccess, isError, error } =
     useWriteContract();
 
-
-
   const { taskAdd, taskPending, taskSuccess } = useTaskAdd();
 
   const createTask = async (data: any) => {
@@ -63,9 +60,11 @@ export default function TaskAdd({ router }: TaskAddProps) {
 
       const { detailsUrl, rewardToken, owner, isOpen, name } = data;
       const expiryDate = BigInt(
-        Math.floor(new Date(data.expiryDate).getTime() / 1000)
+        Math.floor(new Date(data.expiryDate).getTime() / 1000),
       );
-      const whitelistedParticipants = Array.isArray(data.whitelistedParticipants)
+      const whitelistedParticipants = Array.isArray(
+        data.whitelistedParticipants,
+      )
         ? data.whitelistedParticipants
         : [data.whitelistedParticipants];
       const totalRewardAmount = BigInt(data.totalRewardAmount);
@@ -84,10 +83,10 @@ export default function TaskAdd({ router }: TaskAddProps) {
         isTokenDisbursed: data.isTokenDisbursed,
         requireApproval: data.requireApproval,
         isWhitelisted: data.isWhitelisted,
-        maxParticipants: maxParticipants.toString(),
+        maxParticipants: maxParticipants,
         acceptedParticipantCount: 0, // Default to 0
         whitelistedParticipants: whitelistedParticipants || [],
-        verfiedParticipants: [], // Default to empty array
+        verifiedParticipants: [], // Default to empty array
       });
 
       // Success Toast

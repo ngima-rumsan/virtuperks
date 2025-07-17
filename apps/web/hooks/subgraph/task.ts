@@ -1,5 +1,6 @@
 import { useGraphService } from "@/providers/subgraph-provider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TaskCreateParams } from "@workspace/sdk/type";
 import { useAccount } from "wagmi";
 import {
   useReadRewardManagementGetTask,
@@ -14,7 +15,7 @@ export const useTaskAdd = () => {
   const { address, isConnected } = useAccount();
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: TaskCreateParams) => {
       const verifiedParticipants = data.verifiedParticipants || [];
 
       const result = await writeContractAsync({
@@ -37,7 +38,7 @@ export const useTaskAdd = () => {
             verifiedParticipants:
               verifiedParticipants as readonly `0x${string}`[],
           },
-          data.whitelistedParticipants,
+          (data.whitelistedParticipants ?? []) as readonly `0x${string}`[],
         ],
       });
       return result;
