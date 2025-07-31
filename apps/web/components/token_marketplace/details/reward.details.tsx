@@ -5,6 +5,7 @@ import {
   useApproveReward,
   useGetRedeemedRewardByParticiant,
   useGetRewardById,
+  useGetRewardOwner,
   useRedeemReward,
 } from "@/hooks/subgraph/token-marketplace";
 import { Coins } from "lucide-react";
@@ -29,10 +30,12 @@ const RewardDetails = ({ rewardId, router }: RewardDetailsProps) => {
   const { participantTotalToken, isError } = useCheckParticipantBalance(
     address as `0x${string}`,
   );
-// hookto get redeemed rewards by participant
-  const getParticipantReward = useGetRedeemedRewardByParticiant(address as `0x${string}`);
-  const redeemedRewardsByParticipant = getParticipantReward?.data?.data?.rewardRedeemeds || [];
- 
+  // hookto get redeemed rewards by participant
+  const getParticipantReward = useGetRedeemedRewardByParticiant(
+    address as `0x${string}`,
+  );
+  const redeemedRewardsByParticipant =
+    getParticipantReward?.data?.data?.rewardRedeemeds || [];
 
   const [step, setStep] = useState<Step>("approve");
   const [loading, setLoading] = useState(false);
@@ -43,6 +46,8 @@ const RewardDetails = ({ rewardId, router }: RewardDetailsProps) => {
   const [redeemTxHash, setRedeemTxHash] = useState<string | null>(null);
   const { ApproveReward, ApprovePending } = useApproveReward();
   const { RewardRedeem, RedeemPending } = useRedeemReward();
+
+  const { getRewardOwner } = useGetRewardOwner(rewardId);
 
   if (isLoading)
     return <p className="p-6 text-gray-500">Loading reward details...</p>;
@@ -124,7 +129,8 @@ const RewardDetails = ({ rewardId, router }: RewardDetailsProps) => {
           <h2 className="text-xl font-semibold mb-2">
             Title: {rewardRaw.name}
           </h2>
-          <p className="text-gray-600 mb-4">Description: Token reward</p>
+          <p className="text-gray-600 mb-4">Reward Owner ID: </p>
+          <p>{getRewardOwner}</p>
           <div className="text-gray-600 mb-4 flex items-center gap-2">
             <span>Token:</span>
             <span className="text-blue-600 flex items-center gap-1">
