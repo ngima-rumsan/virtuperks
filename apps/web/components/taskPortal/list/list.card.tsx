@@ -68,7 +68,7 @@ const TaskPortalCard = ({ data, router }: TaskPortalCardProps) => {
                 <div className="flex justify-end ml-auto items-center gap-2">
                   <Coins color="#297AD6" />
                   <span className="text-xl text-[#297AD6] font-bold">
-                    {task?.taskDetail.rewardAmount} tokens
+                    {task?.taskDetail.totalRewardAmount} tokens
                   </span>
                 </div>
               </div>

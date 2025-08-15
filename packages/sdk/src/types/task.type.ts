@@ -58,6 +58,6 @@ export interface Tasks {
     detailsUrl: string;
     maxParticipants: number;
     expiryDate: number;
-    rewardAmount: number;
+    totalRewardAmount: number;
   };
 }
