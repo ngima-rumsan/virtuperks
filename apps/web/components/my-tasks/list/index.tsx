@@ -66,7 +66,10 @@ export default function TaskListMain({ router }: TaskListMainProps) {
   const participatingTaskList =
     participatingTask?.data?.participantTaskStatuses || [];
 
-  const ownedTaskList = ownedTask?.data?.participantTaskStatuses || [];
+  const ownedTaskList = ownedTask?.data?.taskCreateds || [];
+
+  console.log("Participating Task List:", participatingTask);
+  console.log("Owned Task List:", ownedTask);
 
   const columns = useColumns();
 
@@ -75,13 +78,6 @@ export default function TaskListMain({ router }: TaskListMainProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    pageCount: Math.ceil(participatingTaskList.length / pagination.pageSize),
     state: {
       sorting,
       columnFilters,
@@ -89,6 +85,10 @@ export default function TaskListMain({ router }: TaskListMainProps) {
       rowSelection,
       pagination,
     },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
   });
 

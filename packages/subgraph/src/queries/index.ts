@@ -784,40 +784,31 @@ export const GetRewardManagement = `
 export const getParticipantOwnedTasks=`
 query GetCreatorParticipantTasks($creator: Bytes!) {
   taskCreateds(where: { createdBy: $creator }) {
-  internal_id
-  taskDetail {
-  id
-  name
-  detailsUrl
-  owner
-  expiryDate
-  rewardToken
-  totalRewardAmount
-  isOpen
-  requireApproval
-  isWhitelisted
-  isTokenDisbursed
-  maxParticipants
-  acceptedParticipantCount
-  verifiedParticipants
+    internal_id
+    taskDetail {
+      id
+      name
+      detailsUrl
+      owner
+      expiryDate
+      rewardToken
+      totalRewardAmount
+      isOpen
+      requireApproval
+      isWhitelisted
+      isTokenDisbursed
+      maxParticipants
+      acceptedParticipantCount
+      verifiedParticipants
+    }
+    rewardManagement {
+      id
+      appId
+      name
+      rewardManagement
+    }
   }
-  rewardManagement {
-  id
-  appId
-  name
-  rewardManagement
-  }
-  participantTaskStatuses(where: { participant: $creator}) {
-  id
-  participant
-  taskId
-  status
-  lastUpdatedBlock
-  lastUpdatedTimestamp
-  completionUrl
-  }
-  }
-  }
+}
   `
 
 
