@@ -72,38 +72,49 @@ const filtered = participants.filter((p: any) =>
       const roleHex = data.role as `0x${string}`;
       const appId = process.env.NEXT_PUBLIC_APP_ID as `0x${string}`;
       let result;
-
+  
       if (action === "assign") {
         result = await assignRole({
           role: roleHex,
           appId,
           wallet: data.walletAddress as `0x${string}`,
         });
+  
         toast({
           title: "Role Assigned",
           description: `Role assigned successfully. TX Hash: ${result.txHash}`,
+          variant: "success",
         });
+  
+        router.push("/participants");   
       } else {
         result = await revokeRole({
           role: roleHex,
           appId,
           wallet: data.walletAddress as `0x${string}`,
         });
+  
         toast({
           title: "Role Revoked",
           description: `Role revoked successfully. TX Hash: ${result.txHash}`,
+          variant: "success",
+          duration: 2000, 
         });
+  
+        router.push("/participants");   
       }
-
+  
       form.reset();
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Transaction Failed",
         description: error?.message || `Unable to ${action} role`,
+        duration: 2000,
       });
     }
   };
+  
 
   const isLoading = assignRolePending || revokeRolePending;
 
@@ -199,9 +210,9 @@ const filtered = participants.filter((p: any) =>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value={process.env.NEXT_PUBLIC_MINTER_ROLE as string}>
+                            {/* <SelectItem value={process.env.NEXT_PUBLIC_MINTER_ROLE as string}>
                               Minter
-                            </SelectItem>
+                            </SelectItem> */}
                             <SelectItem value={process.env.NEXT_PUBLIC_PARTICIPANT_ROLE as string}>
                               Participant
                             </SelectItem>
